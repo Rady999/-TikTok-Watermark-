@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>علامة مائية متحركة للفيديو - تيك توك</title>
+  <meta name="description" content="أداة احترافية لإضافة لوجو متحرك بنمط توقيع تيك توك على الفيديوهات وتصديرها بجودة عالية وبدون خوادم خارجية." />
+  
+  <!-- OpenGraph / Social Share Meta -->
+  <meta property="og:title" content="علامة مائية متحركة للفيديو - تيك توك" />
+  <meta property="og:description" content="أداة احترافية لإضافة لوجو متحرك بنمط توقيع تيك توك على الفيديوهات وتصديرها بجودة عالية وبدون خوادم خارجية." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- خطوط عربية وتنسيقات -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- عنصر الفيديو الداخلي المستخدم للمعالجة والرسم (مخفي من الصفحة) -->
+  <video id="sourceVideo" playsinline webkit-playsinline crossOrigin="anonymous" style="display: none;"></video>
+
+  <div class="app-container">
+    
+    <!-- الهيدر والتعريف -->
+    <header class="header">
+      <div class="brand-badge">
+        <span class="dot"></span>
+        توقيع تيك توك الديناميكي (TikTok Watermark)
+      </div>
+      <h1>
+        دمج علامة مائية متحركة <span class="highlight">للفيديو</span>
+      </h1>
+      <p>
+        ارفع أي فيديو ولوجو لإنشاء علامة مائية ذكية تنتقل بنعومة وتنبض بالشفافية مثل توقيع تيك توك، مع تصدير عالي الدقة مباشرة من متصفحك بدون الحاجة لأي خوادم خارجية.
+      </p>
+    </header>
+
+    <!-- شريط المراحل -->
+    <nav class="steps-nav" aria-label="خطوات العمل">
+      <div class="step-item active" id="stepIndicator1">
+        <span class="step-num">١</span>
+        <span>اختيار الفيديو</span>
+      </div>
+      <div class="step-item" id="stepIndicator2">
+        <span class="step-num">٢</span>
+        <span>تحديد اللوجو</span>
+      </div>
+      <div class="step-item" id="stepIndicator3">
+        <span class="step-num">٣</span>
+        <span>الضبط والمعاينة</span>
+      </div>
+      <div class="step-item" id="stepIndicator4">
+        <span class="step-num">٤</span>
+        <span>تصدير الفيديو</span>
+      </div>
+    </nav>
+
+    <!-- الخطوة 1: رفع الفيديو -->
+    <section class="panel-card" id="videoUploadSection">
+      <div class="card-title">
+        <h2>
+          <span class="icon-wrap">🎬</span>
+          الخطوة الأولى: اختيار ملف الفيديو
+        </h2>
+        <span class="file-specs">MP4 • WebM • MOV • حتى 4K</span>
+      </div>
+
+      <div class="dropzone" id="videoDropzone">
+        <div class="dropzone-icon">📥</div>
+        <div class="dropzone-title">اسحب وأفلت الفيديو هنا، أو اضغط للتصفح</div>
+        <div class="dropzone-desc">يدعم الفيديوهات العمودية 9:16 (ريلز / تيك توك / شورتس) والفيديوهات الأفقية 16:9</div>
+        <button type="button" class="btn btn-primary" onclick="event.stopPropagation(); document.getElementById('videoFileInput').click();">
+          📁 تصفح ملفات جهازك
+        </button>
+      </div>
+      <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/quicktime,video/x-matroska,video/*" style="display: none;" />
+    </section>
+
+    <!-- الخطوة 2: اختيار وتخصيص اللوجو -->
+    <section class="panel-card" id="logoUploadSection">
+      <div class="card-title">
+        <h2>
+          <span class="icon-wrap">✨</span>
+          الخطوة الثانية: صورة اللوجو (العلامة المائية)
+        </h2>
+      </div>
+
+      <div class="logo-selection-box">
+        <div class="logo-preview-wrapper" title="معاينة اللوجو">
+          <img id="logoPreviewImg" class="logo-preview-img" alt="شعار العلامة المائية" src="/assets/logo.png" />
+        </div>
+
+        <div class="logo-details">
+          <h4 id="logoNameDisplay">اللوجو الافتراضي (assets/logo.png)</h4>
+          <p>يفضل استخدام صورة بصيغة PNG مع خلفية شفافة للحصول على أفضل مظهر جمالي.</p>
+          <div class="logo-actions">
+            <button type="button" class="btn btn-secondary" id="changeLogoBtn">
+              🔄 استبدال بصورة أخرى
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetDefaultLogoBtn">
+              ↺ استعادة اللوجو الافتراضي
+            </button>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="logoFileInput" accept="image/png,image/webp,image/jpeg,image/svg+xml,image/*" style="display: none;" />
+    </section>
+
+    <!-- الخطوة 3 و 4: لوحة المعاينة والتحكم والتصدير (تظهر فور اختيار الفيديو) -->
+    <section class="panel-card hidden" id="previewPanel">
+      <div class="card-title">
+        <h2>
+          <span class="icon-wrap">👁️</span>
+          معاينة حية ومحاكاة توقيع تيك توك
+        </h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="file-specs" id="videoResolutionBadge">1080 × 1920px</span>
+          <span class="file-specs" id="videoDurationBadge">00:00</span>
+          <span class="file-specs" id="videoFileNameDisplay">video.mp4</span>
+        </div>
+      </div>
+
+      <!-- شبكة العرض: كانفس المعاينة + لوحة التحكم -->
+      <div class="workspace-grid">
+        
+        <!-- مساحة عرض الكانفس -->
+        <div class="preview-container">
+          <div class="canvas-viewport">
+            <canvas id="previewCanvas"></canvas>
+            <div class="canvas-watermark-tag">
+              <span class="live-dot"></span>
+              معاينة حية بالأبعاد الأصلية
+            </div>
+          </div>
+
+          <!-- شريط التحكم بتشغيل الفيديو -->
+          <div class="media-controls-bar">
+            <button type="button" class="btn btn-secondary" id="playPauseBtn">
+              <span>▶</span> تشغيل
+            </button>
+            <input type="range" id="timeScrubber" class="time-scrubber" min="0" max="100" value="0" step="0.1" />
+            <div class="time-display">
+              <span id="timeCurrent">00:00</span> / <span id="timeTotal">00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- لوحة التحكم بالإعدادات والحركة -->
+        <div class="controls-panel">
+          
+          <!-- حجم اللوجو -->
+          <div class="control-group">
+            <div class="control-label">
+              <span>حجم اللوجو نسبةً لعرض الفيديو</span>
+              <span class="control-value" id="logoSizeValue">13.5%</span>
+            </div>
+            <input type="range" id="logoSizeSlider" class="control-slider" min="8" max="25" step="0.5" value="13.5" />
+            <div class="control-hint">النسبة المثالية لأسلوب تيك توك هي بين 12% و 15%.</div>
+          </div>
+
+          <!-- سرعة وتكرار التنقل -->
+          <div class="control-group">
+            <div class="control-label">
+              <span>تكرار الحركة والانتقال</span>
+              <span class="control-value" id="speedValue">1.0x</span>
+            </div>
+            <input type="range" id="speedSlider" class="control-slider" min="0.5" max="2.5" step="0.1" value="1.0" />
+            <div class="control-hint">ينتقل اللوجو كل 4 إلى 7 ثوانٍ بنعومة (ease-in-out) ثم يثبت مكانه.</div>
+          </div>
+
+          <!-- نطاق الشفافية الأدنى والأقصى -->
+          <div class="control-group">
+            <div class="control-label">
+              <span>الحد الأدنى لشفافية النبض (Min Opacity)</span>
+              <span class="control-value" id="opacityMinValue">25%</span>
+            </div>
+            <input type="range" id="opacityMinSlider" class="control-slider" min="10" max="50" step="1" value="25" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>الحد الأقصى لشفافية النبض (Max Opacity)</span>
+              <span class="control-value" id="opacityMaxValue">70%</span>
+            </div>
+            <input type="range" id="opacityMaxSlider" class="control-slider" min="50" max="95" step="1" value="70" />
+            <div class="control-hint">ينبض اللوجو باستمرار بين الشفافيتين بموجة جيبية ناعمة.</div>
+          </div>
+
+          <!-- خيارات المظهر والظلال -->
+          <div class="control-group">
+            <label class="toggle-row">
+              <span>ظل ناعم للّوجو (لتحسين القراءة على أي خلفية)</span>
+              <div class="toggle-switch">
+                <input type="checkbox" id="dropShadowToggle" checked />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row">
+              <span>قص دائري ناعم لشعار اللوجو</span>
+              <div class="toggle-switch">
+                <input type="checkbox" id="circularClipToggle" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          </div>
+
+          <!-- تنبيهات هامة مدمجة بالواجهة -->
+          <div class="notice-box notice-warning">
+            <div class="notice-icon">⚠️</div>
+            <div>
+              <strong>تنبيه الزمن الحقيقي:</strong> التصدير يستغرق مدة الفيديو نفسها (فيديو مدته دقيقة = دقيقة تصدير تقريباً) لضمان أعلى جودة إطارات ودمج دقيق لمسار الصوت دون تقطيع.
+            </div>
+          </div>
+
+          <div class="notice-box notice-info">
+            <div class="notice-icon">ℹ️</div>
+            <div id="formatNoticeText">
+              جاري فحص دعم المتصفح لتنسيق MP4 و WebM...
+            </div>
+          </div>
+
+          <!-- زر بدء التصدير -->
+          <button type="button" class="btn btn-primary btn-lg" id="startExportBtn">
+            ⚡ تصدير الفيديو بالعلامة المائية
+          </button>
+
+          <!-- شريط تقدم التصدير -->
+          <div class="export-status-card" id="exportStatusCard">
+            <div class="progress-header">
+              <span id="exportStatusDesc">جاري بدء التصدير والتسجيل...</span>
+              <span id="exportProgressText">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="exportProgressBar"></div>
+            </div>
+            <div class="progress-details">
+              <span id="exportTimeRemaining">الوقت المتبقي: جاري الحساب...</span>
+              <span>تسجيل صامت في الخلفية</span>
+            </div>
+            <button type="button" class="btn btn-danger hidden" id="cancelExportBtn">
+              ✖ إلغاء التصدير
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- شاشة اكتمال التصدير والتحميل -->
+    <section class="export-result-panel" id="resultPanel">
+      <div class="success-badge">✓</div>
+      <h2>تم دمج وتصدير الفيديو بنجاح!</h2>
+      <p style="color: var(--text-muted); max-width: 500px;">
+        تم دمج العلامة المائية المتحركة بنمط توقيع تيك توك وحفظ الملف على جهازك. يمكنك أيضاً معاينة النتيجة أدناه أو إعادة تنزيله:
+      </p>
+
+      <video id="resultVideoPreview" class="result-video-preview" controls></video>
+
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+        <button type="button" class="btn btn-primary btn-lg" id="downloadResultBtn">
+          📥 تنزيل الفيديو المصدّر
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg" id="startOverBtn">
+          🔄 البدء من جديد مع فيديو آخر
+        </button>
+      </div>
+    </section>
+
+    <!-- تذييل الصفحة -->
+    <footer class="footer-info">
+      <div>أداة دمج العلامة المائية المتحركة بنمط توقيع تيك توك • مبنية بتقنيات الويب النقية 100%</div>
+      <div>جميع المعالجات تتم محلياً في متصفحك بأمان تام دون إرسال الفيديوهات لأي سيرفر.</div>
+    </footer>
+
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "علامة مائية متحركة للفيديو - تيك توك",
+  "description": "أداة احترافية لإضافة لوجو متحرك بنمط توقيع تيك توك على الفيديوهات وتصديرها بجودة عالية وبدون خوادم خارجية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
