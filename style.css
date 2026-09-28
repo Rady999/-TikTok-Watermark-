@@ -505,6 +505,57 @@ body::before {
   color: var(--text-subtle);
 }
 
+/* شبكة خيارات أبعاد وتنسيق الفيديو (الأصلية، ريلز، يوتيوب) */
+.ratio-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ratio-chip-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ratio-chip-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+  border-color: var(--accent-secondary);
+}
+
+.ratio-chip-btn.active {
+  background: rgba(37, 244, 238, 0.12);
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+  box-shadow: 0 0 12px rgba(37, 244, 238, 0.25);
+}
+
+.ratio-chip-btn .ratio-icon {
+  font-size: 1.2rem;
+}
+
+.ratio-chip-btn .ratio-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ratio-chip-btn .ratio-desc {
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
 /* أزرار التبديل والخيارات */
 .toggle-row {
   display: flex;

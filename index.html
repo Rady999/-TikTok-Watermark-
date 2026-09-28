@@ -20,8 +20,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- عنصر الفيديو الداخلي المستخدم للمعالجة والرسم (مخفي من الصفحة) -->
-  <video id="sourceVideo" playsinline webkit-playsinline style="display: none;"></video>
+  <!-- عنصر الفيديو الداخلي المستخدم للمعالجة والرسم (مخفي من الرؤية ولكن مرئي للشاشة لتفادي توقف المتصفح عن رسم الفريمات) -->
+  <video id="sourceVideo" playsinline webkit-playsinline muted preload="auto" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;"></video>
 
   <div class="app-container">
     
@@ -209,11 +209,37 @@
             </label>
           </div>
 
+          <!-- اختيار مقاس وأبعاد تصدير الفيديو -->
+          <div class="control-group">
+            <div class="control-label">
+              <span>مقاس وأبعاد الفيديو المصدّر</span>
+              <span class="control-value" id="aspectRatioDisplay">الأبعاد الأصلية</span>
+            </div>
+            <div class="ratio-options-grid">
+              <button type="button" class="ratio-chip-btn active" data-ratio="original">
+                <span class="ratio-icon">📐</span>
+                <span class="ratio-title">أبعاد الفيديو الأصلية</span>
+                <span class="ratio-desc">نفس مقاس ودقة الفيديو الأصلي</span>
+              </button>
+              <button type="button" class="ratio-chip-btn" data-ratio="reels">
+                <span class="ratio-icon">📱</span>
+                <span class="ratio-title">مقاس الريلز (Reels)</span>
+                <span class="ratio-desc">عمودي 9:16 (1080 × 1920)</span>
+              </button>
+              <button type="button" class="ratio-chip-btn" data-ratio="youtube">
+                <span class="ratio-icon">📺</span>
+                <span class="ratio-title">لونج فيديو (اليوتيوب)</span>
+                <span class="ratio-desc">أفقي 16:9 (1920 × 1080)</span>
+              </button>
+            </div>
+            <div class="control-hint">يتم ضبط الفيديو بذكاء داخل المقاس المختار دون تمطيط أو تشويه للصورة.</div>
+          </div>
+
           <!-- تفاصيل ومواصفات التصدير -->
           <div class="notice-box notice-info">
             <div class="notice-icon">💎</div>
             <div>
-              <strong>تصدير فائق الجودة (Original Quality):</strong> سيتم تصدير الفيديو بالسرعة العادية وبدقة الفيديو الأصلية الكاملة مع دمج الصوت والعلامة المائية المتحركة بدقة 100%.
+              <strong>تصدير فائق الجودة:</strong> سيتم دمج الصوت وحركة العلامة المائية بدقة فائقة وفق المقاس المختار.
               <div id="formatNoticeText" style="font-size: 0.8rem; margin-top: 4px; opacity: 0.85;"></div>
             </div>
           </div>
