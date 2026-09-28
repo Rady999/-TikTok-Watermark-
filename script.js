@@ -393,13 +393,20 @@ function updatePlaybackUi() {
 // تحميل اللوجو الافتراضي تلقائياً
 function loadDefaultLogo() {
   const img = new Image();
-  img.crossOrigin = 'anonymous';
+  // ملاحظة: لا نضع crossOrigin = 'anonymous' إذا كان المسار محلياً لتجنب قيود CORS عند فتح الملف مباشرة عبر file://
+  if (CONFIG.defaultLogoPath.startsWith('http://') || CONFIG.defaultLogoPath.startsWith('https://')) {
+    img.crossOrigin = 'anonymous';
+  }
   img.onload = () => {
     state.logoImage = img;
     state.logoLoaded = true;
     state.isDefaultLogo = true;
-    state.ui.logoPreviewImg.src = img.src;
-    state.ui.logoNameDisplay.textContent = 'اللوجو الافتراضي (assets/logo.png)';
+    if (state.ui.logoPreviewImg) {
+      state.ui.logoPreviewImg.src = img.src;
+    }
+    if (state.ui.logoNameDisplay) {
+      state.ui.logoNameDisplay.textContent = 'اللوجو الافتراضي (assets/logo.png)';
+    }
     if (state.videoWidth > 0) {
       resetLogoPosition();
     }
