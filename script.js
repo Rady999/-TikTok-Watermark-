@@ -50,14 +50,8 @@ const CONFIG = {
   // قص دائري ناعم للوجو (مفيد إذا كان اللوجو مربعاً وتريده كشارة دائرية)
   enableCircularClip: false,
 
-  // معدل البت المستهدف لتسجيل الفيديو (5 Mbps لجودة ممتازة)
-  videoBitrate: 5000000,
-
-  // مضاعف سرعة التصدير الفائقة (1x, 2x, 4x, 8x)
-  exportPlaybackRate: 4.0,
-
-  // دقة التصدير ('original', '1080', '720')
-  exportResolution: 'original'
+  // معدل البت المستهدف لتسجيل الفيديو (8 Mbps لأعلى جودة فيديو وصوت أصلية)
+  videoBitrate: 8000000
 };
 
 // ============================================================================
@@ -536,14 +530,13 @@ function togglePlayPause() {
 }
 
 // ============================================================================
-// 10. التصدير الفعلي السريع وحفظ الفيديو (Turbo Export Pipeline)
+// 10. التصدير الفعلي وحفظ الفيديو (Export Pipeline - Normal Speed & Original Quality)
 // ============================================================================
 async function startExport() {
   if (!state.videoElement || !state.videoFile || state.isExporting) return;
 
-  const playbackRate = CONFIG.exportPlaybackRate || 1.0;
+  const video = state.videoElement;
   const duration = state.videoDuration || 1;
-  const estimatedSeconds = Math.max(1, Math.round(duration / playbackRate));
 
   // تحديث حالة التطبيق للبدء
   state.isExporting = true;
@@ -559,10 +552,13 @@ async function startExport() {
   state.ui.resultPanel.classList.remove('visible');
   state.ui.exportProgressBar.style.width = '0%';
   state.ui.exportProgressText.textContent = '0%';
-  state.ui.exportStatusDesc.textContent = `جاري التصدير السريع (${playbackRate}x)...`;
+  state.ui.exportStatusDesc.textContent = 'جاري تحضير البث وبدء التسجيل بالجودة الأصلية...';
 
-  // ضبط دقة الكانفس حسب خيار المستخدم
-  adjustCanvasResolution();
+  // الحفاظ على دقة الكانفس الأصلية تماماً بدون أي ضغط أو تصغير
+  if (state.ui.canvas && state.videoWidth > 0 && state.videoHeight > 0) {
+    state.ui.canvas.width = state.videoWidth;
+    state.ui.canvas.height = state.videoHeight;
+  }
 
   // تهيئة الصوت والكانفس
   initAudioPipeline();
@@ -587,7 +583,7 @@ async function startExport() {
     }
   }
 
-  // إعداد MediaRecorder بالصيغة المدعومة الأفضل
+  // إعداد MediaRecorder بالصيغة المدعومة الأفضل ومعدل بت عالي
   const mimeType = state.supportedMimeType || 'video/webm';
   const recorderOptions = {
     mimeType: mimeType,
@@ -617,14 +613,13 @@ async function startExport() {
     handleExportComplete(mimeType);
   };
 
-  // ضبط بداية الفيديو من الصفر وسرعة التشغيل المضاعفة
-  const video = state.videoElement;
+  // ضبط بداية الفيديو من الصفر وتشغيل بالسرعة العادية 1.0x
   video.pause();
   video.currentTime = 0;
-  video.playbackRate = playbackRate;
+  video.playbackRate = 1.0;
   resetLogoPosition();
 
-  // حلقة متابعة وتحديث شريط التقدم الفائق
+  // حلقة متابعة تقدم التصدير بالسرعة العادية
   const checkProgress = () => {
     if (!state.isExporting || state.exportCancelled) return;
 
@@ -635,11 +630,11 @@ async function startExport() {
     state.ui.exportProgressBar.style.width = `${pct}%`;
     state.ui.exportProgressText.textContent = `${pct}%`;
 
-    const remainingSecs = Math.max(0, Math.round((total - current) / playbackRate));
-    state.ui.exportTimeRemaining.textContent = `الوقت المتبقي التقديري: ${formatTime(remainingSecs)} (بسرعة ${playbackRate}x)`;
-    state.ui.exportStatusDesc.textContent = `جاري معالجة ودمج الفيديو... (${formatTime(current)} / ${formatTime(total)})`;
+    const remainingSecs = Math.max(0, Math.round(total - current));
+    state.ui.exportTimeRemaining.textContent = `الوقت المتبقي: ${formatTime(remainingSecs)}`;
+    state.ui.exportStatusDesc.textContent = `جاري دمج الفيديو بدقته الأصلية... (${formatTime(current)} / ${formatTime(total)})`;
 
-    // التحقق من نهاية الفيديو يدوياً لضمان عدم التعليق على آخر فريم
+    // التحقق من نهاية الفيديو
     if (video.ended || current >= total - 0.1) {
       stopExportAndFinalize();
       return;
@@ -653,7 +648,7 @@ async function startExport() {
   };
 
   // بدء التسجيل وتشغيل الفيديو
-  state.mediaRecorder.start(100);
+  state.mediaRecorder.start(150);
 
   try {
     await video.play();
@@ -663,38 +658,6 @@ async function startExport() {
     console.error('فشل تشغيل الفيديو أثناء التصدير:', playErr);
     alert('تعذر تشغيل الفيديو تلقائياً. يرجى الضغط على زر التشغيل أولاً ثم المحاولة.');
     cancelExport();
-  }
-}
-
-// ضبط أبعاد الكانفس بحسب الخيار المحدد للتصدير
-function adjustCanvasResolution() {
-  if (!state.videoElement || !state.ui.canvas) return;
-  const origW = state.videoWidth || 1080;
-  const origH = state.videoHeight || 1920;
-  const mode = CONFIG.exportResolution;
-
-  if (mode === '1080') {
-    if (origW > origH) {
-      // أفقي
-      state.ui.canvas.width = 1920;
-      state.ui.canvas.height = Math.round(1920 * (origH / origW));
-    } else {
-      // عمودي
-      state.ui.canvas.width = Math.round(1080 * (origW / origH));
-      state.ui.canvas.height = 1080;
-    }
-  } else if (mode === '720') {
-    if (origW > origH) {
-      state.ui.canvas.width = 1280;
-      state.ui.canvas.height = Math.round(1280 * (origH / origW));
-    } else {
-      state.ui.canvas.width = Math.round(720 * (origW / origH));
-      state.ui.canvas.height = 720;
-    }
-  } else {
-    // الدقة الأصلية الكاملة
-    state.ui.canvas.width = origW;
-    state.ui.canvas.height = origH;
   }
 }
 
@@ -886,10 +849,12 @@ function initApp() {
   state.isMp4Supported = formatInfo.isMp4;
 
   const formatNoticeText = document.getElementById('formatNoticeText');
-  if (formatInfo.isMp4) {
-    formatNoticeText.textContent = 'متصفحك يدعم تصدير MP4 (H.264) عالي الجودة متوافق مع كافة المنصات.';
-  } else {
-    formatNoticeText.textContent = 'متصفحك لا يدعم ترميز MP4 الداخلي؛ سيتم التصدير بصيغة WebM فائقة الجودة والمتوافقة مع كافة الأجهزة الحديثة.';
+  if (formatNoticeText) {
+    if (formatInfo.isMp4) {
+      formatNoticeText.textContent = 'متصفحك يدعم تصدير MP4 (H.264) عالي الجودة متوافق مع كافة المنصات.';
+    } else {
+      formatNoticeText.textContent = 'متصفحك لا يدعم ترميز MP4 الداخلي؛ سيتم التصدير بصيغة WebM فائقة الجودة والمتوافقة مع كافة الأجهزة الحديثة.';
+    }
   }
 
   // تجهيز مراجع DOM
@@ -934,9 +899,6 @@ function initApp() {
     exportProgressText: document.getElementById('exportProgressText'),
     exportTimeRemaining: document.getElementById('exportTimeRemaining'),
     exportStatusDesc: document.getElementById('exportStatusDesc'),
-    exportResDisplay: document.getElementById('exportResDisplay'),
-    exportResolutionSelect: document.getElementById('exportResolutionSelect'),
-    speedEstimateNotice: document.getElementById('speedEstimateNotice'),
 
     resultPanel: document.getElementById('resultPanel'),
     resultVideoPreview: document.getElementById('resultVideoPreview'),
@@ -945,46 +907,6 @@ function initApp() {
   };
 
   state.videoElement = state.ui.videoElement;
-
-  // أزرار سرعة التصدير الفائقة (Turbo Speed Buttons)
-  const speedButtons = document.querySelectorAll('.speed-chip-btn');
-  speedButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      speedButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const rate = parseFloat(btn.getAttribute('data-speed')) || 1.0;
-      CONFIG.exportPlaybackRate = rate;
-
-      // تحديث نص التنبيه الزمني التقديري
-      if (state.ui.speedEstimateNotice) {
-        if (rate === 1.0) {
-          state.ui.speedEstimateNotice.textContent = 'وضع المعالجة العادي (1x): التصدير بالزمن الحقيقي بنفس مدة الفيديو.';
-        } else if (rate === 2.0) {
-          state.ui.speedEstimateNotice.textContent = 'وضع المعالجة المضاعف (2x): يتم إنهاء التصدير في نصف مدة الفيديو تقريباً.';
-        } else if (rate === 4.0) {
-          state.ui.speedEstimateNotice.textContent = 'وضع المعالجة السريع (4x): يتم إنهاء التصدير في ربع مدة الفيديو تقريباً.';
-        } else {
-          state.ui.speedEstimateNotice.textContent = 'وضع المعالجة الفائق (8x): سرعة خارقة (فيديو دقيقة يُصدّر في 7 ثوانٍ تقريباً).';
-        }
-      }
-    });
-  });
-
-  // قائمة اختيار دقة التصدير
-  if (state.ui.exportResolutionSelect) {
-    state.ui.exportResolutionSelect.addEventListener('change', (e) => {
-      CONFIG.exportResolution = e.target.value;
-      if (state.ui.exportResDisplay) {
-        if (e.target.value === '1080') {
-          state.ui.exportResDisplay.textContent = '1080p';
-        } else if (e.target.value === '720') {
-          state.ui.exportResDisplay.textContent = '720p';
-        } else {
-          state.ui.exportResDisplay.textContent = 'الأصلية';
-        }
-      }
-    });
-  }
 
   // 1. أحداث السحب والإفلات لملف الفيديو
   const dropzone = state.ui.dropzone;

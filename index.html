@@ -209,46 +209,12 @@
             </label>
           </div>
 
-          <!-- سرعة التصدير الفائقة (Turbo Export Speed) -->
-          <div class="control-group">
-            <div class="control-label">
-              <span>سرعة معالجة التصدير (Turbo Export)</span>
-              <span class="turbo-badge">🚀 تسريع فائق</span>
-            </div>
-            <div class="speed-buttons-grid">
-              <button type="button" class="speed-chip-btn" data-speed="1.0">1x (عادي)</button>
-              <button type="button" class="speed-chip-btn" data-speed="2.0">2x (مضاعف)</button>
-              <button type="button" class="speed-chip-btn active" data-speed="4.0">4x (سريع)</button>
-              <button type="button" class="speed-chip-btn" data-speed="8.0">8x (فائق)</button>
-            </div>
-            <div class="control-hint">التسريع يجعل الفيديو يُعالج بسرعة مضاعفة (فيديو دقيقة يُصدّر في 15 ثانية على 4x) مع الحفاظ على الصوت والحركة الطبيعية.</div>
-          </div>
-
-          <!-- دقة التصدير -->
-          <div class="control-group">
-            <div class="control-label">
-              <span>دقة ملف الفيديو المصدّر</span>
-              <span class="control-value" id="exportResDisplay">الأصلية</span>
-            </div>
-            <select id="exportResolutionSelect" class="custom-select">
-              <option value="original" selected>دقة الفيديو الأصلية (أعلى جودة)</option>
-              <option value="1080">Full HD (1080p) - متوازنة وسريعة</option>
-              <option value="720">HD (720p) - سرعة فائقة وحجم خفيف</option>
-            </select>
-          </div>
-
-          <!-- تنبيهات مدمجة بالواجهة -->
+          <!-- تفاصيل ومواصفات التصدير -->
           <div class="notice-box notice-info">
-            <div class="notice-icon">⚡</div>
-            <div id="speedEstimateNotice">
-              وضع المعالجة السريعة مفعّل: سيتم إنهاء التصدير في ربع مدة الفيديو تقريباً.
-            </div>
-          </div>
-
-          <div class="notice-box notice-info" style="display: none;" id="formatNoticeBox">
-            <div class="notice-icon">ℹ️</div>
-            <div id="formatNoticeText">
-              جاري فحص دعم المتصفح لتنسيق MP4 و WebM...
+            <div class="notice-icon">💎</div>
+            <div>
+              <strong>تصدير فائق الجودة (Original Quality):</strong> سيتم تصدير الفيديو بالسرعة العادية وبدقة الفيديو الأصلية الكاملة مع دمج الصوت والعلامة المائية المتحركة بدقة 100%.
+              <div id="formatNoticeText" style="font-size: 0.8rem; margin-top: 4px; opacity: 0.85;"></div>
             </div>
           </div>
 
